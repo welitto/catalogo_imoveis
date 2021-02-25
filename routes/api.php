@@ -19,8 +19,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::prefix('v1')->namespace('Api')->group(function(){
-    Route::prefix('/real-states')->name('real_state.')->group(function(){
-        Route::resource('/', 'RealStateController');
+Route::prefix('v1')->namespace('App\Http\Controllers\Api')->group(function(){
+    Route::name('real_state.')->group(function(){
+        Route::resource('real-states', 'RealStateController');
     });
 });
