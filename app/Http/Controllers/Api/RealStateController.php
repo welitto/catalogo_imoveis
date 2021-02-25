@@ -24,6 +24,25 @@ class RealStateController extends Controller
         return response()->json($realState, 200);
     }
 
+    public function show($id)
+    {
+        $data = $request->all();
+
+        try{
+            
+            $realState = $this->realState->findOrFail($data); //Mass Asignment
+
+            return reponse()->json([
+                'data' => $realState
+            ], 200);
+        }
+        catch(\Exception $e)
+        {
+            $message = new ApiMessages($e->getMessage());
+            return \response()->json($message->getMessage(), 401);
+        }
+    }
+
     public function store(RealStateRequest $request)
     {
         $data = $request->all();
@@ -40,7 +59,8 @@ class RealStateController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['error' => $e->getMessage()], 401);
+            $message = new ApiMessages($e->getMessage());
+            return \response()->json($message->getMessage(), 401);
         }
     }
 
@@ -61,7 +81,28 @@ class RealStateController extends Controller
         }
         catch(\Exception $e)
         {
-            return \response()->json(['error' => $e->getMessage()], 401);
+            $message = new ApiMessages($e->getMessage());
+            return \response()->json($message->getMessage(), 401);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try{
+            
+            $realState = $this->realState->findOrFail($id);
+            $realState->delete();
+
+            return reponse()->json([
+                'data' => [
+                    'msg' => 'Imóvel removido com sucesso!'
+                ]
+            ], 200);
+        }
+        catch(\Exception $e)
+        {
+            $message = new ApiMessages($e->getMessage());
+            return \response()->json($message->getMessage(), 401);
         }
     }
 }
