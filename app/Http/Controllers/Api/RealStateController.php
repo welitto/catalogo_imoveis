@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Api\ApiMessage;
 use App\Models\RealState;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RealStateRequest;
@@ -26,11 +27,9 @@ class RealStateController extends Controller
 
     public function show($id)
     {
-        $data = $request->all();
-
         try{
             
-            $realState = $this->realState->findOrFail($data); //Mass Asignment
+            $realState = $this->realState->findOrFail($id); //Mass Asignment
 
             return reponse()->json([
                 'data' => $realState
