@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
         //
         $data = $request->all();
@@ -87,7 +88,7 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CategoryRequest $request, $id)
     {
         //
         $data = $request->all();
