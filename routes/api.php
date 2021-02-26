@@ -20,14 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::prefix('v1')->namespace('App\Http\Controllers\Api')->group(function(){
+    
+    Route::resource('real-states', 'RealStateController');
+    Route::resource('users', 'UserController');
+    Route::resource('categories', 'CategoryController');
 
-    Route::name('real_state.')->group(function(){
-        Route::resource('real-states', 'RealStateController');
-    });
-
-    Route::name('users.')->group(function(){
-        Route::resource('users', 'UserController');
-    });
     
 });
 
