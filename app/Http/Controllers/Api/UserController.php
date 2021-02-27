@@ -38,29 +38,31 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-	    $data = $request->all();
-
+        $data = $request->all();
+        
 	    if(!$request->has('password') || !$request->get('password')){
-		    $message = new ApiMessage('É necessário informar uma senha para  usuário...');
+		    $message = new ApiMessages('É necessário informar uma senha para  usuário...');
 		    return response()->json($message->getMessage(), 401);
-	    }
+        }
+        
+       
 
 	    Validator::make($data, [
-		    'phone' => 'required',
-	    	'mobile_phone' => 'required'
-	    ])->validate();
+		    'profile.phone' => 'required',
+	    	'profile.mobile_phone' => 'required'
+        ])->validate();
+        
+        //return response()->json($data, 200);
 
 	    try{
 
-	    	$data['password'] = bcrypt($data['password']);
+            $data['password'] = bcrypt($data['password']);
+            
+            $profile = $data['profile'];
+	    	$profile['social_networks'] = serialize($profile['social_networks']);
 
 	    	$user = $this->user->create($data);
-	    	$user->profile()->create(
-	    		[
-	    			'phone' => $data['phone'],
-				    'mobile_phone' => $data['mobile_phone']
-			    ]
-		    );
+	    	$user->profile()->create($profile);
 
 		    return response()->json([
 			    'data' => [
@@ -85,7 +87,9 @@ class UserController extends Controller
 
         try{
             
-            $user = $this->user->findOrFail($id); //Mass Asignment
+            $user = $this->user->with('profile')->findOrFail($id); //Mass Asignment
+            
+            $user->profile->social_networks = \unserialize($user->profile->social_networks);
 
             return reponse()->json([
                 'data' => $user
@@ -105,36 +109,40 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        //
-        $data = $request->all();
+	    $data = $request->all();
 
-        if($request->has('password') || $request->get('password'))
-        {
-            $data['password'] = \bcrypt($data['password']); 
-        }
-        else{
-            unset($data['password']);
-        }
+	    if($request->has('password') && $request->get('password')){
+		    $data['password'] = bcrypt($data['password']);
+	    } else {
+	    	unset($data['password']);
+	    }
 
-        try
-        {
-            
-            $user = $this->user->findOrFail($id);
-            $user->update($data);
+	    Validator::make($data, [
+		    'profile.phone' => 'required',
+		    'profile.mobile_phone' => 'required'
+	    ])->validate();
 
-            return reponse()->json([
-                'data' => [
-                    'msg' => 'Usuário atualizado com sucesso!'
-                ]
-            ], 200);
-        }
-        catch(\Exception $e)
-        {
-            $message = new ApiMessage($e->getMessage());
-            return \response()->json($message->getMessage(), 401);
-        }
+	    try{
+	    	$profile = $data['profile'];
+	    	$profile['social_networks'] = serialize($profile['social_networks']);
+
+		    $user = $this->user->findOrFail($id);
+		    $user->update($data);
+
+		    $user->profile()->update($profile);
+
+		    return response()->json([
+			    'data' => [
+				    'msg' => 'Usuário atualizado com sucesso!'
+			    ]
+		    ], 200);
+
+	    } catch (\Exception $e) {
+		    $message = new ApiMessage($e->getMessage());
+		    return response()->json($message->getMessage(), 401);
+	    }
     }
 
     /**
