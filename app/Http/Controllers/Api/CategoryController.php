@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Api\ApiMessage;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use App\Http\Controllers\Controller;
@@ -52,7 +53,7 @@ class CategoryController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
@@ -76,7 +77,7 @@ class CategoryController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
@@ -106,7 +107,7 @@ class CategoryController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
@@ -133,7 +134,7 @@ class CategoryController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
@@ -149,7 +150,7 @@ class CategoryController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }

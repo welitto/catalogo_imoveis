@@ -7,6 +7,7 @@ use App\Api\ApiMessage;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -35,34 +36,42 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
-        //
-        $data = $request->all();
+	    $data = $request->all();
 
-        if($request->has('password') || !$request->get('password'))
-        {
-            $message = new ApiMessages('É necessário informar uma senha para o usuário');
-            return \response()->json($message->getMessage(), 401);
-        }
+	    if(!$request->has('password') || !$request->get('password')){
+		    $message = new ApiMessage('É necessário informar uma senha para  usuário...');
+		    return response()->json($message->getMessage(), 401);
+	    }
 
-        try{
-            
-            $data['password'] = \bcrypt($data['password']); 
+	    Validator::make($data, [
+		    'phone' => 'required',
+	    	'mobile_phone' => 'required'
+	    ])->validate();
 
-            $user = $this->user->create($data); //Mass Asignment
+	    try{
 
-            return reponse()->json([
-                'data' => [
-                    'msg' => 'Imóvel cadastro com sucesso!'
-                ]
-            ], 200);
-        }
-        catch(\Exception $e)
-        {
-            $message = new ApiMessages($e->getMessage());
-            return \response()->json($message->getMessage(), 401);
-        }
+	    	$data['password'] = bcrypt($data['password']);
+
+	    	$user = $this->user->create($data);
+	    	$user->profile()->create(
+	    		[
+	    			'phone' => $data['phone'],
+				    'mobile_phone' => $data['mobile_phone']
+			    ]
+		    );
+
+		    return response()->json([
+			    'data' => [
+				    'msg' => 'Usuário cadastrado com sucesso!'
+			    ]
+		    ], 200);
+
+	    } catch (\Exception $e) {
+		    $message = new ApiMessage($e->getMessage());
+		    return response()->json($message->getMessage(), 401);
+	    }
     }
 
     /**
@@ -84,7 +93,7 @@ class UserController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
@@ -123,7 +132,7 @@ class UserController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
@@ -150,7 +159,7 @@ class UserController extends Controller
         }
         catch(\Exception $e)
         {
-            $message = new ApiMessages($e->getMessage());
+            $message = new ApiMessage($e->getMessage());
             return \response()->json($message->getMessage(), 401);
         }
     }
